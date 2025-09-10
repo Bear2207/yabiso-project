@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Base de données PostgreSQL
+  db:
+    image: postgres:latest
+    container_name: yabiso_db
+    environment:
+      POSTGRES_DB: yabiso
+      POSTGRES_USER: lulu
+      POSTGRES_PASSWORD: 23525689
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - yabiso_network
+
+  # Backend (Node.js/Express)
+  backend:
+    build: ./backend
+    container_name: yabiso_backend
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: yabiso
+      DB_USER: lulu
+      DB_PASSWORD: 23525689
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - yabiso_network
+
+  # Frontend (Nginx pour servir les fichiers HTML/JS/CSS)
+  frontend:
+    build: ./frontend
+    container_name: yabiso_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    networks:
+      - yabiso_network
+
+volumes:
+  postgres_data:
+
+networks:
+  yabiso_network:
+    driver: bridge
