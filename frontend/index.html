@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yabiso GYM Manager - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #3a86ff;
+            --secondary: #8338ec;
+            --success: #38b000;
+            --warning: #ffbe0b;
+            --danger: #ff006e;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --sidebar-width: 250px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7f9;
+            color: var(--dark);
+            overflow-x: hidden;
+        }
+        
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: var(--dark);
+            color: white;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            width: var(--sidebar-width);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--primary);
+        }
+        
+        .nav-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: var(--primary);
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            margin-left: var(--sidebar-width);
+            transition: margin-left 0.3s ease;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f0f2f5;
+            padding: 8px 15px;
+            border-radius: 20px;
+            width: 300px;
+        }
+        
+        .search-bar input {
+            border: none;
+            background: transparent;
+            outline: none;
+            width: 100%;
+            margin-left: 10px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .notification-badge {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Statistics Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .icon-members { background: rgba(58, 134, 255, 0.2); color: var(--primary); }
+        .icon-revenue { background: rgba(56, 176, 0, 0.2); color: var(--success); }
+        .icon-sessions { background: rgba(255, 190, 11, 0.2); color: var(--warning); }
+        .icon-retention { background: rgba(131, 56, 236, 0.2); color: var(--secondary); }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+        
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        
+        /* Tables */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        
+        .status-paid { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .status-reserved { background: #cce5ff; color: #004085; }
+        .status-completed { background: #d4edda; color: #155724; }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Menu toggle for mobile */
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: flex;
+            }
+        }
+        
+        /* Loader */
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <i>💪</i>
+                <span>YABISO GYM</span>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item active" data-section="dashboard">
+                    <i>📊</i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-section="members">
+                    <i>👥</i>
+                    <span>Membres</span>
+                </div>
+                <div class="nav-item" data-section="subscriptions">
+                    <i>🎫</i>
+                    <span>Abonnements</span>
+                </div>
+                <div class="nav-item" data-section="sessions">
+                    <i>📅</i>
+                    <span>Séances</span>
+                </div>
+                <div class="nav-item" data-section="payments">
+                    <i>💳</i>
+                    <span>Paiements</span>
+                </div>
+                <div class="nav-item" data-section="progress">
+                    <i>📈</i>
+                    <span>Progrès</span>
+                </div>
+                <div class="nav-item" data-section="coaches">
+                    <i>🏋️</i>
+                    <span>Coachs</span>
+                </div>
+                <div class="nav-item" data-section="notifications">
+                    <i>🔔</i>
+                    <span>Notifications</span>
+                </div>
+                <div class="nav-item" data-section="settings">
+                    <i>⚙️</i>
+                    <span>Paramètres</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Tableau de Bord Yabiso</h1>
+                <div class="search-bar">
+                    <i>🔍</i>
+                    <input type="text" id="searchInput" placeholder="Rechercher...">
+                </div>
+                <div class="user-info">
+                    <div class="notification-badge" id="notificationsBtn">
+                        <i>🔔</i>
+                        <span class="badge" id="notificationCount">0</span>
+                    </div>
+                    <div class="user-profile">
+                        <div class="avatar">A</div>
+                        <div>
+                            <div id="userName">Admin</div>
+                            <div style="font-size: 0.8rem; color: var(--gray);" id="userRole">Administrateur</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Membres Actifs</h3>
+                        <div class="stat-icon icon-members">👥</div>
+                    </div>
+                    <div class="stat-number" id="activeMembers">0</div>
+                    <div class="stat-trend trend-up">
+                        <i>↑</i>
+                        <span id="newMembersText">Chargement...</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Revenus Mensuels</h3>
+                        <div class="stat-icon icon-revenue">💰</div>
+                    </div>
+                    <div class="stat-number" id="monthlyRevenue">0€</div>
+                    <div class="stat-trend trend-up">
+                        <i>↑</i>
+                        <span id="revenueTrendText">Chargement...</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Séances Cette Semaine</h3>
+                        <div class="stat-icon icon-sessions">📅</div>
+                    </div>
+                    <div class="stat-number" id="weeklySessions">0</div>
+                    <div class="stat-trend trend-up">
+                        <i>↑</i>
+                        <span id="upcomingSessionsText">Chargement...</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <h3>Taux de Rétention</h3>
+                        <div class="stat-icon icon-retention">📊</div>
+                    </div>
+                    <div class="stat-number" id="retentionRate">0%</div>
+                    <div class="stat-trend trend-up">
+                        <i>↑</i>
+                        <span id="retentionText">Chargement...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Revenus Mensuels</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-outline" id="monthlyBtn">Mois</button>
+                            <button class="btn btn-outline" id="quarterlyBtn">Trimestre</button>
+                            <button class="btn btn-primary" id="yearlyBtn">Année</button>
+                        </div>
+                    </div>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Répartition des Abonnements</h3>
+                        <div class="chart-actions">
+                            <button class="btn btn-outline" id="exportBtn">Export</button>
+                        </div>
+                    </div>
+                    <canvas id="subscriptionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tables -->
+            <div class="tables-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Derniers Paiements</h3>
+                        <button class="btn btn-outline" id="viewAllPayments">Voir tout</button>
+                    </div>
+                    <div id="paymentsTable">
+                        <div class="loader" id="paymentsLoader"></div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Prochaines Séances</h3>
+                        <button class="btn btn-outline" id="viewAllSessions">Voir tout</button>
+                    </div>
+                    <div id="sessionsTable">
+                        <div class="loader" id="sessionsLoader"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let revenueChart, subscriptionChart;
+        let currentUser = {
+            id: 1,
+            name: "Admin",
+            role: "admin"
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Menu toggle for mobile
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            
+            menuToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+            });
+            
+            // Initialize charts with empty data first
+            initCharts();
+            
+            // Load data from backend
+            loadDashboardData();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Navigation
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const section = this.getAttribute('data-section');
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // On mobile, close sidebar after selection
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                    }
+                    
+                    // Here you would load the appropriate section
+                    console.log(`Switching to section: ${section}`);
+                });
+            });
+        }
+
+        function initCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            revenueChart = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+                    datasets: [{
+                        label: 'Revenus (€)',
+                        data: [],
+                        borderColor: '#3a86ff',
+                        backgroundColor: 'rgba(58, 134, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Subscription Chart
+            const subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
+            subscriptionChart = new Chart(subscriptionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel'],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#3a86ff',
+                            '#8338ec',
+                            '#ffbe0b',
+                            '#38b000'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Chart period buttons
+            document.getElementById('monthlyBtn').addEventListener('click', () => loadRevenueData('month'));
+            document.getElementById('quarterlyBtn').addEventListener('click', () => loadRevenueData('quarter'));
+            document.getElementById('yearlyBtn').addEventListener('click', () => loadRevenueData('year'));
+            
+            // View all buttons
+            document.getElementById('viewAllPayments').addEventListener('click', () => viewAll('payments'));
+            document.getElementById('viewAllSessions').addEventListener('click', () => viewAll('sessions'));
+            
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', exportData);
+            
+            // Notifications
+            document.getElementById('notificationsBtn').addEventListener('click', showNotifications);
+            
+            // Search
+            document.getElementById('searchInput').addEventListener('keyup', handleSearch);
+        }
+
+        function loadDashboardData() {
+            // Simulate API calls to backend
+            console.log("Loading dashboard data...");
+            
+            // In a real app, you would fetch these from your backend API
+            simulateAPICall('/api/stats', {
+                activeMembers: 156,
+                newMembersThisMonth: 12,
+                monthlyRevenue: 4250,
+                revenueTrend: 8,
+                weeklySessions: 47,
+                upcomingSessions: 15,
+                retentionRate: 87
+            }).then(data => {
+                updateStats(data);
+            });
+            
+            simulateAPICall('/api/revenue/year', {
+                revenue: [3200, 3800, 4250, 3950, 4100, 4350, 4600, 4200, 4400, 4700, 4900, 5200]
+            }).then(data => {
+                updateRevenueChart(data.revenue);
+            });
+            
+            simulateAPICall('/api/subscriptions', {
+                distribution: [45, 25, 15, 15]
+            }).then(data => {
+                updateSubscriptionChart(data.distribution);
+            });
+            
+            simulateAPICall('/api/payments/recent', {
+                payments: [
+                    { member: "Jean Dupont", amount: "29,99€", status: "paid", date: "15/01/2024" },
+                    { member: "Marie Martin", amount: "79,99€", status: "paid", date: "16/01/2024" },
+                    { member: "Sophie Dubois", amount: "27,99€", status: "cancelled", date: "22/01/2024" },
+                    { member: "Luc Moreau", amount: "139,99€", status: "pending", date: "20/01/2024" },
+                    { member: "David Roux", amount: "19,99€", status: "paid", date: "25/01/2024" }
+                ]
+            }).then(data => {
+                updatePaymentsTable(data.payments);
+            });
+            
+            simulateAPICall('/api/sessions/upcoming', {
+                sessions: [
+                    { member: "Jean Dupont", coach: "Philippe Martinez", type: "Musculation", date: "05/02/2024 09:00", status: "reserved" },
+                    { member: "Thomas Simon", coach: "Catherine Petit", type: "Cardio", date: "05/02/2024 10:30", status: "completed" },
+                    { member: "Antoine Lefebvre", coach: "Michel Robert", type: "Yoga", date: "05/02/2024 14:00", status: "reserved" },
+                    { member: "Émilie Leroy", coach: "Philippe Martinez", type: "CrossFit", date: "06/02/2024 11:00", status: "cancelled" },
+                    { member: "Laura Garcia", coach: "Catherine Petit", type: "Pilates", date: "06/02/2024 16:00", status: "completed" }
+                ]
+            }).then(data => {
+                updateSessionsTable(data.sessions);
+            });
+            
+            simulateAPICall('/api/notifications/count', {
+                count: 3
+            }).then(data => {
+                document.getElementById('notificationCount').textContent = data.count;
+            });
+        }
+
+        function updateStats(data) {
+            document.getElementById('activeMembers').textContent = data.activeMembers;
+            document.getElementById('newMembersText').textContent = `+${data.newMembersThisMonth} ce mois-ci`;
+            
+            document.getElementById('monthlyRevenue').textContent = `${data.monthlyRevenue.toLocaleString('fr-FR')}€`;
+            document.getElementById('revenueTrendText').textContent = `+${data.revenueTrend}% vs mois dernier`;
+            
+            document.getElementById('weeklySessions').textContent = data.weeklySessions;
+            document.getElementById('upcomingSessionsText').textContent = `${data.upcomingSessions} séances à venir`;
+            
+            document.getElementById('retentionRate').textContent = `${data.retentionRate}%`;
+            document.getElementById('retentionText').textContent = 'Excellente performance';
+        }
+
+        function updateRevenueChart(revenueData) {
+            revenueChart.data.datasets[0].data = revenueData;
+            revenueChart.update();
+        }
+
+        function updateSubscriptionChart(distributionData) {
+            subscriptionChart.data.datasets[0].data = distributionData;
+            subscriptionChart.update();
+        }
+
+        function updatePaymentsTable(payments) {
+            const paymentsTable = document.getElementById('paymentsTable');
+            const loader = document.getElementById('paymentsLoader');
+            
+            if (loader) loader.style.display = 'none';
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Membre</th>
+                            <th>Montant</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            payments.forEach(payment => {
+                let statusClass = 'status-pending';
+                let statusText = 'En attente';
+                
+                if (payment.status === 'paid') {
+                    statusClass = 'status-paid';
+                    statusText = 'Payé';
+                } else if (payment.status === 'cancelled') {
+                    statusClass = 'status-cancelled';
+                    statusText = 'Annulé';
+                }
+                
+                html += `
+                    <tr>
+                        <td>${payment.member}</td>
+                        <td>${payment.amount}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>${payment.date}</td>
+                        <td><button class="action-btn">⋯</button></td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            paymentsTable.innerHTML = html;
+        }
+
+        function updateSessionsTable(sessions) {
+            const sessionsTable = document.getElementById('sessionsTable');
+            const loader = document.getElementById('sessionsLoader');
+            
+            if (loader) loader.style.display = 'none';
+            
+            let html = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Membre</th>
+                            <th>Coach</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            sessions.forEach(session => {
+                let statusClass = 'status-reserved';
+                let statusText = 'Réservée';
+                
+                if (session.status === 'completed') {
+                    statusClass = 'status-completed';
+                    statusText = 'Effectuée';
+                } else if (session.status === 'cancelled') {
+                    statusClass = 'status-cancelled';
+                    statusText = 'Annulée';
+                }
+                
+                html += `
+                    <tr>
+                        <td>${session.member}</td>
+                        <td>${session.coach}</td>
+                        <td>${session.type}</td>
+                        <td>${session.date}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            
+            html += `</tbody></table>`;
+            sessionsTable.innerHTML = html;
+        }
+
+        function loadRevenueData(period) {
+            console.log(`Loading revenue data for period: ${period}`);
+            // In a real app, you would fetch from your backend API
+            // fetch(`/api/revenue/${period}`).then(...)
+        }
+
+        function viewAll(type) {
+            console.log(`View all ${type}`);
+            // In a real app, you would navigate to the appropriate page
+        }
+
+        function exportData() {
+            console.log("Exporting data...");
+            // In a real app, you would trigger a download
+        }
+
+        function showNotifications() {
+            console.log("Showing notifications...");
+            // In a real app, you would display a notifications panel
+        }
+
+        function handleSearch(event) {
+            if (event.key === 'Enter') {
+                const searchTerm = event.target.value;
+                console.log(`Searching for: ${searchTerm}`);
+                // In a real app, you would filter data based on search term
+            }
+        }
+
+        // Simulate API calls (to be replaced with real fetch calls)
+        function simulateAPICall(endpoint, data) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log(`API call to ${endpoint} successful`);
+                    resolve(data);
+                }, 1000);
+            });
+        }
+    </script>
+</body>
+</html>
