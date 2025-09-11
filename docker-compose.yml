@@ -19,7 +19,9 @@ services:
 
   # Backend (Node.js/Express)
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
     container_name: yabiso_backend
     environment:
       DB_HOST: db
@@ -31,22 +33,20 @@ services:
       - "3000:3000"
     depends_on:
       - db
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - yabiso_network
 
   # Frontend (Nginx pour servir les fichiers HTML/JS/CSS)
   frontend:
-    build: ./frontend
+    image: nginx:alpine
     container_name: yabiso_frontend
     ports:
       - "80:80"
-    depends_on:
-      - backend
     volumes:
       - ./frontend:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
     networks:
       - yabiso_network
 
