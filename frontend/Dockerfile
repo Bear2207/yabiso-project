@@ -2,7 +2,8 @@ FROM nginx:alpine
 
 COPY . /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
+# Create nginx configuration
+RUN echo 'events { worker_connections 1024; } http { include /etc/nginx/mime.types; default_type application/octet-stream; server { listen 80; server_name localhost; root /usr/share/nginx/html; index index.html; location / { try_files $uri $uri/ /index.html; } location /api/ { proxy_pass http://backend:3000; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; } } }' > /etc/nginx/nginx.conf
 
 EXPOSE 80
 
