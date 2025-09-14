@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Admin Salle de Sport</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>FitAdmin</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#"><i class="icon-dashboard"></i> Tableau de bord</a></li>
+                    <li><a href="#"><i class="icon-users"></i> Utilisateurs</a></li>
+                    <li><a href="#"><i class="icon-subscriptions"></i> Abonnements</a></li>
+                    <li><a href="#"><i class="icon-payments"></i> Paiements</a></li>
+                    <li><a href="#"><i class="icon-sessions"></i> Séances</a></li>
+                    <li><a href="#"><i class="icon-progress"></i> Progrès</a></li>
+                    <li><a href="#"><i class="icon-notifications"></i> Notifications</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn-logout">
+                    <i class="icon-logout"></i> Déconnexion
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <h1>Tableau de bord</h1>
+                <div class="user-info">
+                    <span>Admin Richard</span>
+                    <div class="notification-badge">3</div>
+                </div>
+            </header>
+
+            <!-- Statistics Cards -->
+            <section class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="icon-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>45</h3>
+                        <p>Utilisateurs actifs</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon subscriptions">
+                        <i class="icon-subscriptions"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>32</h3>
+                        <p>Abonnements</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon payments">
+                        <i class="icon-payments"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>1,245€</h3>
+                        <p>Revenus ce mois</p>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon sessions">
+                        <i class="icon-sessions"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3>18</h3>
+                        <p>Séances cette semaine</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <h3>Revenus mensuels</h3>
+                    <canvas id="revenue-chart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Répartition des abonnements</h3>
+                    <canvas id="subscriptions-chart"></canvas>
+                </div>
+            </section>
+
+            <!-- Recent Activities -->
+            <section class="recent-activities">
+                <h2>Activités récentes</h2>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon new-user"></div>
+                        <div class="activity-content">
+                            <p>Nouvel utilisateur inscrit: Jean Dupont</p>
+                            <span class="activity-time">Il y a 2 heures</span>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon payment"></div>
+                        <div class="activity-content">
+                            <p>Paiement reçu de Marie Martin (79.99€)</p>
+                            <span class="activity-time">Il y a 5 heures</span>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon session"></div>
+                        <div class="activity-content">
+                            <p>Séance annulée: Pierre Bernard avec Coach Martinez</p>
+                            <span class="activity-time">Hier à 15:30</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/charts.js"></script>
+</body>
+
+</html>

@@ -1,540 +1,454 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yabiso GYM Manager - Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Admin - Fitness Center</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
-    <button class="menu-toggle" id="menuToggle">☰</button>
-    
-    <div class="dashboard">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="logo">
-                <i>💪</i>
-                <span>YABISO GYM</span>
+    <!-- Page de connexion -->
+    <div class="login-container" id="loginPage">
+        <div class="login-form">
+            <h2>Connexion Admin</h2>
+            <div class="alert alert-danger" id="loginError"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required placeholder="admin@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" required placeholder="Votre mot de passe">
+                </div>
+                <button type="submit" class="btn btn-primary">Se connecter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Fitness Admin</h3>
             </div>
-            <div class="nav-menu">
-                <div class="nav-item active" data-section="dashboard">
-                    <i>📊</i>
-                    <span>Dashboard</span>
-                </div>
-                <div class="nav-item" data-section="members">
-                    <i>👥</i>
-                    <span>Membres</span>
-                </div>
-                <div class="nav-item" data-section="subscriptions">
-                    <i>🎫</i>
-                    <span>Abonnements</span>
-                </div>
-                <div class="nav-item" data-section="sessions">
-                    <i>📅</i>
-                    <span>Séances</span>
-                </div>
-                <div class="nav-item" data-section="payments">
-                    <i>💳</i>
-                    <span>Paiements</span>
-                </div>
-                <div class="nav-item" data-section="progress">
-                    <i>📈</i>
-                    <span>Progrès</span>
-                </div>
-                <div class="nav-item" data-section="coaches">
-                    <i>🏋️</i>
-                    <span>Coachs</span>
-                </div>
-                <div class="nav-item" data-section="notifications">
-                    <i>🔔</i>
-                    <span>Notifications</span>
-                </div>
-                <div class="nav-item" data-section="settings">
-                    <i>⚙️</i>
-                    <span>Paramètres</span>
-                </div>
-            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-section="dashboard-home"><i>📊</i> Dashboard</a></li>
+                <li><a href="#" data-section="users"><i>👥</i> Utilisateurs</a></li>
+                <li><a href="#" data-section="subscriptions"><i>🎫</i> Abonnements</a></li>
+                <li><a href="#" data-section="payments"><i>💳</i> Paiements</a></li>
+                <li><a href="#" data-section="sessions"><i>📅</i> Séances</a></li>
+                <li><a href="#" data-section="progress"><i>📈</i> Progrès</a></li>
+                <li><a href="#" data-section="notifications"><i>🔔</i> Notifications</a></li>
+                <li>
+                    <button class="logout-btn" id="logoutBtn"><i>🚪</i> Déconnexion</button>
+                </li>
+            </ul>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
             <div class="header">
-                <h1>Tableau de Bord Yabiso</h1>
-                <div class="search-bar">
-                    <i>🔍</i>
-                    <input type="text" id="searchInput" placeholder="Rechercher...">
+                <h2 id="sectionTitle">Tableau de bord</h2>
+                <div>
+                    <span id="currentDate"></span>
                 </div>
-                <div class="user-info">
-                    <div class="notification-badge" id="notificationsBtn">
-                        <i>🔔</i>
-                        <span class="badge" id="notificationCount">0</span>
+            </div>
+
+            <!-- Section Dashboard -->
+            <div class="content-section active-section" id="dashboard-home">
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-primary">
+                            <span>👥</span>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="totalUsers">0</h4>
+                            <p>Utilisateurs</p>
+                        </div>
                     </div>
-                    <div class="user-profile">
-                        <div class="avatar">A</div>
-                        <div>
-                            <div id="userName">Admin</div>
-                            <div style="font-size: 0.8rem; color: var(--gray);" id="userRole">Administrateur</div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-success">
+                            <span>💳</span>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="totalRevenue">0 €</h4>
+                            <p>Revenu total</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-warning">
+                            <span>📅</span>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="totalSessions">0</h4>
+                            <p>Séances cette semaine</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-danger">
+                            <span>🔔</span>
+                        </div>
+                        <div class="stat-info">
+                            <h4 id="unreadNotifications">0</h4>
+                            <p>Notifications non lues</p>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Statistics Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h3>Membres Actifs</h3>
-                        <div class="stat-icon icon-members">👥</div>
-                    </div>
-                    <div class="stat-number" id="activeMembers">0</div>
-                    <div class="stat-trend trend-up">
-                        <i>↑</i>
-                        <span id="newMembersText">Chargement...</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h3>Revenus Mensuels</h3>
-                        <div class="stat-icon icon-revenue">💰</div>
-                    </div>
-                    <div class="stat-number" id="monthlyRevenue">0€</div>
-                    <div class="stat-trend trend-up">
-                        <i>↑</i>
-                        <span id="revenueTrendText">Chargement...</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h3>Séances Cette Semaine</h3>
-                        <div class="stat-icon icon-sessions">📅</div>
-                    </div>
-                    <div class="stat-number" id="weeklySessions">0</div>
-                    <div class="stat-trend trend-up">
-                        <i>↑</i>
-                        <span id="upcomingSessionsText">Chargement...</span>
-                    </div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <h3>Taux de Rétention</h3>
-                        <div class="stat-icon icon-retention">📊</div>
-                    </div>
-                    <div class="stat-number" id="retentionRate">0%</div>
-                    <div class="stat-trend trend-up">
-                        <i>↑</i>
-                        <span id="retentionText">Chargement...</span>
+                <div class="content-section">
+                    <h3>Derniers paiements</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Abonnement</th>
+                                    <th>Montant</th>
+                                    <th>Date</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPayments">
+                                <!-- Les données seront chargées via JavaScript -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Charts -->
-            <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Revenus Mensuels</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-outline" id="monthlyBtn">Mois</button>
-                            <button class="btn btn-outline" id="quarterlyBtn">Trimestre</button>
-                            <button class="btn btn-primary" id="yearlyBtn">Année</button>
-                        </div>
-                    </div>
-                    <canvas id="revenueChart"></canvas>
+            <!-- Section Utilisateurs -->
+            <div class="content-section" id="users">
+                <div class="section-header">
+                    <h3>Gestion des utilisateurs</h3>
+                    <button class="btn btn-primary" id="addUserBtn">Ajouter un utilisateur</button>
                 </div>
-                
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Répartition des Abonnements</h3>
-                        <div class="chart-actions">
-                            <button class="btn btn-outline" id="exportBtn">Export</button>
-                        </div>
-                    </div>
-                    <canvas id="subscriptionChart"></canvas>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Email</th>
+                                <th>Rôle</th>
+                                <th>Date d'inscription</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTable">
+                            <!-- Les données seront chargées via JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- Tables -->
-            <div class="tables-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Derniers Paiements</h3>
-                        <button class="btn btn-outline" id="viewAllPayments">Voir tout</button>
-                    </div>
-                    <div id="paymentsTable">
-                        <div class="loader" id="paymentsLoader"></div>
-                    </div>
+            <!-- Section Abonnements -->
+            <div class="content-section" id="subscriptions">
+                <div class="section-header">
+                    <h3>Gestion des abonnements</h3>
+                    <button class="btn btn-primary" id="addSubscriptionBtn">Ajouter un abonnement</button>
                 </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3>Prochaines Séances</h3>
-                        <button class="btn btn-outline" id="viewAllSessions">Voir tout</button>
-                    </div>
-                    <div id="sessionsTable">
-                        <div class="loader" id="sessionsLoader"></div>
-                    </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Prix</th>
+                                <th>Durée (jours)</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subscriptionsTable">
+                            <!-- Les données seront chargées via JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
+
+            <!-- Autres sections (Paiements, Séances, Progrès, Notifications) -->
+            <!-- Le code serait similaire aux sections précédentes -->
+
         </div>
     </div>
 
     <script>
-        // Variables globales
-        let revenueChart, subscriptionChart;
-        let currentUser = {
-            id: 1,
-            name: "Admin",
-            role: "admin"
+        // Configuration de la base de données
+        const DB_CONFIG = {
+            host: 'localhost',
+            database: 'yabiso',
+            user: 'lulu',
+            password: '23525689',
+            port: 5432
         };
 
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
+        // Variables globales
+        let currentUser = null;
 
-        function initializeApp() {
-            // Menu toggle for mobile
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
+        // Éléments DOM
+        const loginPage = document.getElementById('loginPage');
+        const dashboard = document.getElementById('dashboard');
+        const loginForm = document.getElementById('loginForm');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const sectionTitle = document.getElementById('sectionTitle');
+        const currentDateEl = document.getElementById('currentDate');
+        const sectionLinks = document.querySelectorAll('.sidebar-menu a');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function () {
+            // Afficher la date actuelle
+            const now = new Date();
+            currentDateEl.textContent = now.toLocaleDateString('fr-FR', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
-            
-            // Initialize charts with empty data first
-            initCharts();
-            
-            // Load data from backend
-            loadDashboardData();
-            
-            // Set up event listeners
-            setupEventListeners();
-            
-            // Navigation
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const section = this.getAttribute('data-section');
-                    navItems.forEach(i => i.classList.remove('active'));
+
+            // Vérifier si l'utilisateur est déjà connecté
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showDashboard();
+            }
+
+            // Gestionnaires d'événements
+            loginForm.addEventListener('submit', handleLogin);
+            logoutBtn.addEventListener('click', handleLogout);
+
+            sectionLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const sectionId = this.getAttribute('data-section');
+                    showSection(sectionId);
+
+                    // Mettre à jour la classe active
+                    sectionLinks.forEach(l => l.classList.remove('active'));
                     this.classList.add('active');
-                    
-                    // On mobile, close sidebar after selection
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                    }
-                    
-                    // Here you would load the appropriate section
-                    console.log(`Switching to section: ${section}`);
                 });
             });
-        }
+        });
 
-        function initCharts() {
-            // Revenue Chart
-            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-            revenueChart = new Chart(revenueCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
-                    datasets: [{
-                        label: 'Revenus (€)',
-                        data: [],
-                        borderColor: '#3a86ff',
-                        backgroundColor: 'rgba(58, 134, 255, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
+        // Fonctions de gestion de l'authentification
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Simulation de vérification (à remplacer par un appel à votre API)
+                if (email === 'admin.richard@email.com' && password === 'adminpass') {
+                    currentUser = {
+                        id: 20,
+                        nom: 'Richard',
+                        prenom: 'Admin',
+                        email: email,
+                        role: 'admin'
+                    };
+
+                    // Sauvegarder l'utilisateur dans le localStorage
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+                    showDashboard();
+                    loadDashboardData();
+                } else {
+                    showError('Email ou mot de passe incorrect');
                 }
-            });
-            
-            // Subscription Chart
-            const subscriptionCtx = document.getElementById('subscriptionChart').getContext('2d');
-            subscriptionChart = new Chart(subscriptionCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Mensuel', 'Trimestriel', 'Semestriel', 'Annuel'],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: [
-                            '#3a86ff',
-                            '#8338ec',
-                            '#ffbe0b',
-                            '#38b000'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        function setupEventListeners() {
-            // Chart period buttons
-            document.getElementById('monthlyBtn').addEventListener('click', () => loadRevenueData('month'));
-            document.getElementById('quarterlyBtn').addEventListener('click', () => loadRevenueData('quarter'));
-            document.getElementById('yearlyBtn').addEventListener('click', () => loadRevenueData('year'));
-            
-            // View all buttons
-            document.getElementById('viewAllPayments').addEventListener('click', () => viewAll('payments'));
-            document.getElementById('viewAllSessions').addEventListener('click', () => viewAll('sessions'));
-            
-            // Export button
-            document.getElementById('exportBtn').addEventListener('click', exportData);
-            
-            // Notifications
-            document.getElementById('notificationsBtn').addEventListener('click', showNotifications);
-            
-            // Search
-            document.getElementById('searchInput').addEventListener('keyup', handleSearch);
-        }
-
-        function loadDashboardData() {
-            // Simulate API calls to backend
-            console.log("Loading dashboard data...");
-            
-            // In a real app, you would fetch these from your backend API
-            simulateAPICall('/api/stats', {
-                activeMembers: 156,
-                newMembersThisMonth: 12,
-                monthlyRevenue: 4250,
-                revenueTrend: 8,
-                weeklySessions: 47,
-                upcomingSessions: 15,
-                retentionRate: 87
-            }).then(data => {
-                updateStats(data);
-            });
-            
-            simulateAPICall('/api/revenue/year', {
-                revenue: [3200, 3800, 4250, 3950, 4100, 4350, 4600, 4200, 4400, 4700, 4900, 5200]
-            }).then(data => {
-                updateRevenueChart(data.revenue);
-            });
-            
-            simulateAPICall('/api/subscriptions', {
-                distribution: [45, 25, 15, 15]
-            }).then(data => {
-                updateSubscriptionChart(data.distribution);
-            });
-            
-            simulateAPICall('/api/payments/recent', {
-                payments: [
-                    { member: "Jean Dupont", amount: "29,99€", status: "paid", date: "15/01/2024" },
-                    { member: "Marie Martin", amount: "79,99€", status: "paid", date: "16/01/2024" },
-                    { member: "Sophie Dubois", amount: "27,99€", status: "cancelled", date: "22/01/2024" },
-                    { member: "Luc Moreau", amount: "139,99€", status: "pending", date: "20/01/2024" },
-                    { member: "David Roux", amount: "19,99€", status: "paid", date: "25/01/2024" }
-                ]
-            }).then(data => {
-                updatePaymentsTable(data.payments);
-            });
-            
-            simulateAPICall('/api/sessions/upcoming', {
-                sessions: [
-                    { member: "Jean Dupont", coach: "Philippe Martinez", type: "Musculation", date: "05/02/2024 09:00", status: "reserved" },
-                    { member: "Thomas Simon", coach: "Catherine Petit", type: "Cardio", date: "05/02/2024 10:30", status: "completed" },
-                    { member: "Antoine Lefebvre", coach: "Michel Robert", type: "Yoga", date: "05/02/2024 14:00", status: "reserved" },
-                    { member: "Émilie Leroy", coach: "Philippe Martinez", type: "CrossFit", date: "06/02/2024 11:00", status: "cancelled" },
-                    { member: "Laura Garcia", coach: "Catherine Petit", type: "Pilates", date: "06/02/2024 16:00", status: "completed" }
-                ]
-            }).then(data => {
-                updateSessionsTable(data.sessions);
-            });
-            
-            simulateAPICall('/api/notifications/count', {
-                count: 3
-            }).then(data => {
-                document.getElementById('notificationCount').textContent = data.count;
-            });
-        }
-
-        function updateStats(data) {
-            document.getElementById('activeMembers').textContent = data.activeMembers;
-            document.getElementById('newMembersText').textContent = `+${data.newMembersThisMonth} ce mois-ci`;
-            
-            document.getElementById('monthlyRevenue').textContent = `${data.monthlyRevenue.toLocaleString('fr-FR')}€`;
-            document.getElementById('revenueTrendText').textContent = `+${data.revenueTrend}% vs mois dernier`;
-            
-            document.getElementById('weeklySessions').textContent = data.weeklySessions;
-            document.getElementById('upcomingSessionsText').textContent = `${data.upcomingSessions} séances à venir`;
-            
-            document.getElementById('retentionRate').textContent = `${data.retentionRate}%`;
-            document.getElementById('retentionText').textContent = 'Excellente performance';
-        }
-
-        function updateRevenueChart(revenueData) {
-            revenueChart.data.datasets[0].data = revenueData;
-            revenueChart.update();
-        }
-
-        function updateSubscriptionChart(distributionData) {
-            subscriptionChart.data.datasets[0].data = distributionData;
-            subscriptionChart.update();
-        }
-
-        function updatePaymentsTable(payments) {
-            const paymentsTable = document.getElementById('paymentsTable');
-            const loader = document.getElementById('paymentsLoader');
-            
-            if (loader) loader.style.display = 'none';
-            
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Membre</th>
-                            <th>Montant</th>
-                            <th>Statut</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            payments.forEach(payment => {
-                let statusClass = 'status-pending';
-                let statusText = 'En attente';
-                
-                if (payment.status === 'paid') {
-                    statusClass = 'status-paid';
-                    statusText = 'Payé';
-                } else if (payment.status === 'cancelled') {
-                    statusClass = 'status-cancelled';
-                    statusText = 'Annulé';
-                }
-                
-                html += `
-                    <tr>
-                        <td>${payment.member}</td>
-                        <td>${payment.amount}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                        <td>${payment.date}</td>
-                        <td><button class="action-btn">⋯</button></td>
-                    </tr>
-                `;
-            });
-            
-            html += `</tbody></table>`;
-            paymentsTable.innerHTML = html;
-        }
-
-        function updateSessionsTable(sessions) {
-            const sessionsTable = document.getElementById('sessionsTable');
-            const loader = document.getElementById('sessionsLoader');
-            
-            if (loader) loader.style.display = 'none';
-            
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Membre</th>
-                            <th>Coach</th>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Statut</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            sessions.forEach(session => {
-                let statusClass = 'status-reserved';
-                let statusText = 'Réservée';
-                
-                if (session.status === 'completed') {
-                    statusClass = 'status-completed';
-                    statusText = 'Effectuée';
-                } else if (session.status === 'cancelled') {
-                    statusClass = 'status-cancelled';
-                    statusText = 'Annulée';
-                }
-                
-                html += `
-                    <tr>
-                        <td>${session.member}</td>
-                        <td>${session.coach}</td>
-                        <td>${session.type}</td>
-                        <td>${session.date}</td>
-                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
-                    </tr>
-                `;
-            });
-            
-            html += `</tbody></table>`;
-            sessionsTable.innerHTML = html;
-        }
-
-        function loadRevenueData(period) {
-            console.log(`Loading revenue data for period: ${period}`);
-            // In a real app, you would fetch from your backend API
-            // fetch(`/api/revenue/${period}`).then(...)
-        }
-
-        function viewAll(type) {
-            console.log(`View all ${type}`);
-            // In a real app, you would navigate to the appropriate page
-        }
-
-        function exportData() {
-            console.log("Exporting data...");
-            // In a real app, you would trigger a download
-        }
-
-        function showNotifications() {
-            console.log("Showing notifications...");
-            // In a real app, you would display a notifications panel
-        }
-
-        function handleSearch(event) {
-            if (event.key === 'Enter') {
-                const searchTerm = event.target.value;
-                console.log(`Searching for: ${searchTerm}`);
-                // In a real app, you would filter data based on search term
+            } catch (error) {
+                showError('Erreur de connexion à la base de données');
+                console.error('Erreur:', error);
             }
         }
 
-        // Simulate API calls (to be replaced with real fetch calls)
-        function simulateAPICall(endpoint, data) {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    console.log(`API call to ${endpoint} successful`);
-                    resolve(data);
-                }, 1000);
-            });
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLoginPage();
         }
+
+        function showLoginPage() {
+            dashboard.style.display = 'none';
+            loginPage.style.display = 'flex';
+            loginForm.reset();
+        }
+
+        function showDashboard() {
+            loginPage.style.display = 'none';
+            dashboard.style.display = 'block';
+        }
+
+        function showError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+
+            // Cacher le message après 5 secondes
+            setTimeout(() => {
+                loginError.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSection(sectionId) {
+            // Masquer toutes les sections
+            contentSections.forEach(section => {
+                section.classList.remove('active-section');
+            });
+
+            // Afficher la section demandée
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active-section');
+
+                // Mettre à jour le titre de la section
+                const activeLink = document.querySelector(`.sidebar-menu a[data-section="${sectionId}"]`);
+                if (activeLink) {
+                    sectionTitle.textContent = activeLink.textContent;
+
+                    // Charger les données de la section si nécessaire
+                    if (sectionId === 'users') {
+                        loadUsersData();
+                    } else if (sectionId === 'subscriptions') {
+                        loadSubscriptionsData();
+                    }
+                }
+            }
+        }
+
+        // Fonctions de chargement des données
+        async function loadDashboardData() {
+            try {
+                // Simulation de données (à remplacer par des appels à votre API)
+                document.getElementById('totalUsers').textContent = '142';
+                document.getElementById('totalRevenue').textContent = '8 450 €';
+                document.getElementById('totalSessions').textContent = '37';
+                document.getElementById('unreadNotifications').textContent = '5';
+
+                // Simulation des paiements récents
+                const paymentsTable = document.getElementById('recentPayments');
+                paymentsTable.innerHTML = `
+                    <tr>
+                        <td>Martin Dupont</td>
+                        <td>Premium Mensuel</td>
+                        <td>79,99 €</td>
+                        <td>12/05/2023</td>
+                        <td><span class="badge badge-success">Payé</span></td>
+                    </tr>
+                    <tr>
+                        <td>Sophie Lambert</td>
+                        <td>Basic Trimestriel</td>
+                        <td>149,99 €</td>
+                        <td>11/05/2023</td>
+                        <td><span class="badge badge-success">Payé</span></td>
+                    </tr>
+                    <tr>
+                        <td>Thomas Bernard</td>
+                        <td>Premium Annuel</td>
+                        <td>799,99 €</td>
+                        <td>10/05/2023</td>
+                        <td><span class="badge badge-warning">En attente</span></td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Erreur lors du chargement des données:', error);
+            }
+        }
+
+        async function loadUsersData() {
+            try {
+                // Simulation de données utilisateurs (à remplacer par des appels à votre API)
+                const usersTable = document.getElementById('usersTable');
+                usersTable.innerHTML = `
+                    <tr>
+                        <td>20</td>
+                        <td>Richard Admin</td>
+                        <td>admin.richard@email.com</td>
+                        <td><span class="badge badge-danger">Admin</span></td>
+                        <td>15/01/2023</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>21</td>
+                        <td>Martin Coach</td>
+                        <td>martin.coach@email.com</td>
+                        <td><span class="badge badge-warning">Coach</span></td>
+                        <td>20/02/2023</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>45</td>
+                        <td>Sophie Client</td>
+                        <td>sophie.client@email.com</td>
+                        <td><span class="badge badge-success">Client</span></td>
+                        <td>05/03/2023</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Erreur lors du chargement des utilisateurs:', error);
+            }
+        }
+
+        async function loadSubscriptionsData() {
+            try {
+                // Simulation de données abonnements (à remplacer par des appels à votre API)
+                const subscriptionsTable = document.getElementById('subscriptionsTable');
+                subscriptionsTable.innerHTML = `
+                    <tr>
+                        <td>1</td>
+                        <td>Basic Mensuel</td>
+                        <td>29,99 €</td>
+                        <td>30</td>
+                        <td>Accès à la salle aux heures standards</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Premium Mensuel</td>
+                        <td>79,99 €</td>
+                        <td>30</td>
+                        <td>Accès illimité + 2 cours collectifs inclus</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Premium Annuel</td>
+                        <td>799,99 €</td>
+                        <td>365</td>
+                        <td>Accès illimité + tous cours collectifs + coaching personnalisé</td>
+                        <td>
+                            <button class="btn btn-primary">Modifier</button>
+                            <button class="btn btn-danger">Supprimer</button>
+                        </td>
+                    </tr>
+                `;
+            } catch (error) {
+                console.error('Erreur lors du chargement des abonnements:', error);
+            }
+        }
+
+        // Note: Pour une application réelle, vous devriez implémenter des fonctions similaires
+        // pour se connecter à votre base de données PostgreSQL en utilisant les informations fournies
+        // et récupérer les données réelles plutôt que les données simulées.
     </script>
 </body>
+
 </html>
