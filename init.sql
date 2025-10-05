@@ -30,7 +30,7 @@ INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe, role) VALUES
 ('Martinez', 'Philippe', 'philippe.martinez@email.com', 'motdepasse17', 'coach'),
 ('Petit', 'Catherine', 'catherine.petit@email.com', 'motdepasse18', 'coach'),
 ('Robert', 'Michel', 'michel.robert@email.com', 'motdepasse19', 'coach'),
-('Richard', 'Admin', 'admin.richard@email.com', 'adminpass', 'admin');
+('Loulou', 'Admin', 'yabisoelekiyabino@gmail.com', '23525689', 'admin');
 
 -- Table des abonnements
 CREATE TABLE abonnements (
