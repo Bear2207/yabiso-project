@@ -1,0 +1,21 @@
+FROM php:8.2-fpm-alpine
+
+# Installer les dépendances
+RUN apk update && apk add \
+    postgresql-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    freetype-dev \
+    zip \
+    unzip
+
+# Installer l'extension PostgreSQL
+RUN docker-php-ext-install pdo pdo_pgsql
+
+# Installer Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+WORKDIR /var/www/html
+
+EXPOSE 9000
+CMD ["php-fpm"]
