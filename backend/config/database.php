@@ -2,7 +2,7 @@
 class Database
 {
     private $host = 'postgres';
-    private $db_name = 'yabiso';
+    private $db_name = 'yabiso_db';
     private $username = 'admin';
     private $password = '23525689';
     public $conn;
@@ -16,10 +16,9 @@ class Database
                 $this->username,
                 $this->password
             );
-            $this->conn->exec("set names utf8");
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ATTR_ERRMODE_EXCEPTION);
         } catch (PDOException $exception) {
-            echo "Erreur de connexion: " . $exception->getMessage();
+            error_log("Erreur de connexion: " . $exception->getMessage());
         }
         return $this->conn;
     }
