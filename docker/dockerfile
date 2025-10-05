@@ -1,16 +1,27 @@
-FROM php:8.2-fpm-alpine
+FROM php:8.3-fpm-alpine
 
-# Installer les dépendances
-RUN apk update && apk add \
+# Utiliser les mirrors Alpine pour une meilleure fiabilité
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/main" > /etc/apk/repositories && \
+    echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/community" >> /etc/apk/repositories
+
+# Mettre à jour et installer les dépendances en une seule couche
+RUN apk update --no-cache && \
+    apk add --no-cache \
     postgresql-dev \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
     zip \
-    unzip
+    unzip \
+    libzip-dev
 
-# Installer l'extension PostgreSQL
-RUN docker-php-ext-install pdo pdo_pgsql
+# Installer les extensions PHP nécessaires
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install -j$(nproc) \
+    pdo \
+    pdo_pgsql \
+    gd \
+    zip
 
 # Installer Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
