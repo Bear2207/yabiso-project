@@ -1,7 +1,7 @@
 <?php
 class Database
 {
-    private $host = 'postgres';
+    private $host = 'localhost';
     private $db_name = 'yabiso_db';
     private $username = 'admin';
     private $password = '23525689';
