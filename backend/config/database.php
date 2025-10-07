@@ -1,24 +1,22 @@
 <?php
 class Database
 {
-    private $host = 'localhost';
-    private $db_name = 'yabiso_db';
-    private $username = 'admin';
-    private $password = '23525689';
-    public $conn;
+    private $host = "localhost";
+    private $port = "5432";
+    private $db_name = "yabiso";
+    private $username = "bearing";
+    private $password = "23525689";
+    private $conn;
 
     public function getConnection()
     {
         $this->conn = null;
         try {
-            $this->conn = new PDO(
-                "pgsql:host=" . $this->host . ";dbname=" . $this->db_name,
-                $this->username,
-                $this->password
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ATTR_ERRMODE_EXCEPTION);
+            $dsn = "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name};";
+            $this->conn = new PDO($dsn, $this->username, $this->password);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $exception) {
-            error_log("Erreur de connexion: " . $exception->getMessage());
+            echo "Erreur de connexion à la base : " . $exception->getMessage();
         }
         return $this->conn;
     }
