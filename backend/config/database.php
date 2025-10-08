@@ -16,11 +16,14 @@ class Database
             $this->conn = new PDO(
                 "pgsql:host={$this->host};port={$this->port};dbname={$this->db_name}",
                 $this->username,
-                $this->password
+                $this->password,
+                array(PDO::ATTR_PERSISTENT => true)
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conn->exec("SET client_encoding TO 'UTF8'");
         } catch (PDOException $exception) {
-            echo "Erreur de connexion à PostgreSQL : " . $exception->getMessage();
+            error_log("Erreur PostgreSQL: " . $exception->getMessage());
+            echo "Erreur de connexion à la base de données.";
         }
 
         return $this->conn;
