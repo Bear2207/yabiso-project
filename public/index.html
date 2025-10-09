@@ -201,16 +201,23 @@
   </div>
 
   <script>
+    // Configuration de l'API
+    const API_BASE_URL = 'http://localhost/camp-entrainement/backend/api';
+
     // Couleurs pour les graphiques
     const chartColors = [
       '#4F46E5', '#10B981', '#EF4444', '#F59E0B', '#8B5CF6',
       '#06B6D4', '#84CC16', '#F97316', '#6366F1', '#EC4899'
     ];
 
+    let pieChartInstance = null;
+    let lineChartInstance = null;
+
     // Charger les données du dashboard
     async function loadDashboardData() {
       try {
-        const response = await fetch('/api/dashboard');
+        showLoading();
+        const response = await fetch(`${API_BASE_URL}/dashboard.php`);
         const data = await response.json();
 
         if (data.success) {
@@ -221,27 +228,55 @@
           updateNextSessions(data.data.prochaines_seances);
         } else {
           console.error('Erreur:', data.message);
+          showError('Erreur de chargement des données');
         }
       } catch (error) {
         console.error('Erreur de chargement:', error);
+        showError('Erreur de connexion au serveur');
+      } finally {
+        hideLoading();
       }
+    }
+
+    // Afficher le chargement
+    function showLoading() {
+      // Tu peux ajouter un spinner ici si tu veux
+      console.log('Chargement...');
+    }
+
+    // Cacher le chargement
+    function hideLoading() {
+      console.log('Chargement terminé');
+    }
+
+    // Afficher une erreur
+    function showError(message) {
+      // Tu peux utiliser une notification toast ici
+      console.error('Erreur:', message);
     }
 
     // Mettre à jour les statistiques
     function updateStats(data) {
-      document.getElementById('totalMembres').textContent = data.total_membres;
-      document.getElementById('totalCoachs').textContent = data.total_coachs;
-      document.getElementById('revenusTotaux').textContent = data.revenus_totaux ? data.revenus_totaux + ' €' : '0 €';
-      document.getElementById('seancesAVenir').textContent = data.seances_a_venir;
+      document.getElementById('totalMembres').textContent = data.total_membres || 0;
+      document.getElementById('totalCoachs').textContent = data.total_coachs || 0;
+      document.getElementById('revenusTotaux').textContent = (data.revenus_totaux || 0).toFixed(2) + ' €';
+      document.getElementById('seancesAVenir').textContent = data.seances_a_venir || 0;
     }
 
     // Créer le graphique circulaire
     function createPieChart(abonnementsData) {
-      const ctx = document.getElementById('pieChart').getContext('2d');
-      const labels = abonnementsData.map(item => item.nom_abonnement);
-      const data = abonnementsData.map(item => item.total);
+      const ctx = document.getElementById('pieChart');
+      if (!ctx) return;
 
-      new Chart(ctx, {
+      // Détruire le graphique existant
+      if (pieChartInstance) {
+        pieChartInstance.destroy();
+      }
+
+      const labels = abonnementsData.map(item => item.nom_abonnement);
+      const data = abonnementsData.map(item => parseInt(item.total));
+
+      pieChartInstance = new Chart(ctx, {
         type: 'pie',
         data: {
           labels: labels,
@@ -253,36 +288,54 @@
         },
         options: {
           responsive: true,
-          legend: {
-            display: false
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
           }
         }
       });
 
       // Mettre à jour la légende
+      updatePieLegend(labels);
+    }
+
+    // Mettre à jour la légende du pie chart
+    function updatePieLegend(labels) {
       const legend = document.getElementById('pieLegend');
+      if (!legend) return;
+
       legend.innerHTML = '';
       labels.forEach((label, index) => {
         const legendItem = document.createElement('div');
         legendItem.className = 'flex items-center';
         legendItem.innerHTML = `
-                    <span class="inline-block w-3 h-3 mr-1 rounded-full" style="background-color: ${chartColors[index]}"></span>
-                    <span>${label}</span>
-                `;
+                  <span class="inline-block w-3 h-3 mr-2 rounded-full" style="background-color: ${chartColors[index]}"></span>
+                  <span class="text-sm">${label}</span>
+              `;
         legend.appendChild(legendItem);
       });
     }
 
     // Créer le graphique linéaire
     function createLineChart(revenusData) {
-      const ctx = document.getElementById('lineChart').getContext('2d');
+      const ctx = document.getElementById('lineChart');
+      if (!ctx) return;
+
+      // Détruire le graphique existant
+      if (lineChartInstance) {
+        lineChartInstance.destroy();
+      }
+
       const labels = revenusData.map(item => {
         const [year, month] = item.mois.split('-');
         return new Date(year, month - 1).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-      });
-      const data = revenusData.map(item => item.revenus);
+      }).reverse();
 
-      new Chart(ctx, {
+      const data = revenusData.map(item => parseFloat(item.revenus || 0)).reverse();
+
+      lineChartInstance = new Chart(ctx, {
         type: 'line',
         data: {
           labels: labels,
@@ -296,11 +349,13 @@
             pointBorderColor: '#ffffff',
             pointBorderWidth: 2,
             pointRadius: 4,
-            tension: 0.4
+            tension: 0.4,
+            fill: true
           }]
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           scales: {
             y: {
               beginAtZero: true,
@@ -318,33 +373,40 @@
     // Mettre à jour la liste des derniers membres
     function updateLastMembers(membres) {
       const list = document.getElementById('derniersMembresList');
+      if (!list) return;
+
       list.innerHTML = '';
+
+      if (!membres || membres.length === 0) {
+        list.innerHTML = '<li class="py-3 text-sm text-gray-500 dark:text-gray-400 text-center">Aucun membre inscrit</li>';
+        return;
+      }
 
       membres.forEach(membre => {
         const listItem = document.createElement('li');
         listItem.className = 'py-3';
         listItem.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 font-bold">
-                                ${membre.prenom.charAt(0)}${membre.nom.charAt(0)}
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                ${membre.prenom} ${membre.nom}
-                            </p>
-                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                ${membre.email}
-                            </p>
-                        </div>
-                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                            <span class="text-xs px-2 py-1 rounded-full ${membre.role === 'coach' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
-                                ${membre.role === 'coach' ? 'Coach' : 'Membre'}
-                            </span>
-                        </div>
-                    </div>
-                `;
+                  <div class="flex items-center space-x-4">
+                      <div class="flex-shrink-0">
+                          <div class="w-8 h-8 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 font-bold text-sm">
+                              ${membre.prenom?.charAt(0) || ''}${membre.nom?.charAt(0) || ''}
+                          </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              ${membre.prenom || ''} ${membre.nom || ''}
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              ${membre.email || ''}
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                          <span class="text-xs px-2 py-1 rounded-full ${membre.role === 'coach' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}">
+                              ${membre.role === 'coach' ? 'Coach' : 'Membre'}
+                          </span>
+                      </div>
+                  </div>
+              `;
         list.appendChild(listItem);
       });
     }
@@ -352,10 +414,12 @@
     // Mettre à jour la liste des prochaines séances
     function updateNextSessions(seances) {
       const list = document.getElementById('prochainesSeancesList');
+      if (!list) return;
+
       list.innerHTML = '';
 
-      if (seances.length === 0) {
-        list.innerHTML = '<li class="py-3 text-sm text-gray-500 dark:text-gray-400">Aucune séance à venir</li>';
+      if (!seances || seances.length === 0) {
+        list.innerHTML = '<li class="py-3 text-sm text-gray-500 dark:text-gray-400 text-center">Aucune séance à venir</li>';
         return;
       }
 
@@ -364,30 +428,30 @@
         const listItem = document.createElement('li');
         listItem.className = 'py-3';
         listItem.innerHTML = `
-                    <div class="flex items-center space-x-4">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center text-green-600 font-bold">
-                                ${seance.type_seance.charAt(0)}
-                            </div>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                ${seance.client_prenom} ${seance.client_nom}
-                            </p>
-                            <p class="text-sm text-gray-500 truncate dark:text-gray-400">
-                                avec ${seance.coach_prenom} ${seance.coach_nom}
-                            </p>
-                            <p class="text-xs text-gray-400">
-                                ${date.toLocaleDateString('fr-FR')} à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
-                            </p>
-                        </div>
-                        <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                            <span class="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
-                                ${seance.type_seance}
-                            </span>
-                        </div>
-                    </div>
-                `;
+                  <div class="flex items-center space-x-4">
+                      <div class="flex-shrink-0">
+                          <div class="w-8 h-8 rounded-full bg-green-200 flex items-center justify-center text-green-600 font-bold text-sm">
+                              ${seance.type_seance?.charAt(0) || 'S'}
+                          </div>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                          <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
+                              ${seance.client_prenom || ''} ${seance.client_nom || ''}
+                          </p>
+                          <p class="text-sm text-gray-500 truncate dark:text-gray-400">
+                              avec ${seance.coach_prenom || ''} ${seance.coach_nom || ''}
+                          </p>
+                          <p class="text-xs text-gray-400">
+                              ${date.toLocaleDateString('fr-FR')} à ${date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                      </div>
+                      <div class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                          <span class="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
+                              ${seance.type_seance || 'Séance'}
+                          </span>
+                      </div>
+                  </div>
+              `;
         list.appendChild(listItem);
       });
     }
@@ -395,6 +459,9 @@
     // Charger les données au démarrage
     document.addEventListener('DOMContentLoaded', function () {
       loadDashboardData();
+
+      // Recharger toutes les 30 secondes pour les données en temps réel
+      setInterval(loadDashboardData, 30000);
     });
   </script>
 </body>

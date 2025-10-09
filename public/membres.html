@@ -289,309 +289,121 @@
       <main class="h-full pb-16 overflow-y-auto">
         <div class="container grid px-6 mx-auto">
           <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
-            Membres
+            Gestion des Membres
           </h2>
-
-          <!-- New Table With actions -->
+      
+          <!-- Cartes statistiques -->
+          <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Total Membres</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-200" id="totalMembres">0</p>
+              </div>
+            </div>
+      
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd">
+                  </path>
+                </svg>
+              </div>
+              <div>
+                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Coach Actifs</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-200" id="totalCoachs">0</p>
+              </div>
+            </div>
+      
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Revenus Totaux</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-200" id="revenusTotaux">0 €</p>
+              </div>
+            </div>
+      
+            <div class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800">
+              <div class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd"
+                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                    clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400">Séances à Venir</p>
+                <p class="text-lg font-semibold text-gray-700 dark:text-gray-200" id="seancesAVenir">0</p>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Actions -->
+          <div class="mb-6 flex justify-between items-center">
+            <div class="flex space-x-4">
+              <button onclick="openAddModal()"
+                class="px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                + Ajouter un Membre
+              </button>
+            </div>
+            <div class="flex space-x-4">
+              <input type="text" placeholder="Rechercher..." id="searchInput"
+                class="px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+              <select id="roleFilter"
+                class="px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                <option value="">Tous les rôles</option>
+                <option value="client">Client</option>
+                <option value="coach">Coach</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+      
+          <!-- Tableau des membres -->
           <div class="w-full overflow-hidden rounded-lg shadow-xs">
             <div class="w-full overflow-x-auto">
               <table class="w-full whitespace-no-wrap">
                 <thead>
                   <tr
                     class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                    <th class="px-4 py-3">Client</th>
-                    <th class="px-4 py-3">Amount</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Nom</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3">Rôle</th>
+                    <th class="px-4 py-3">Date d'inscription</th>
+                    <th class="px-4 py-3">Abonnement</th>
+                    <th class="px-4 py-3">Statut Paiement</th>
                     <th class="px-4 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-                  <tr class="text-gray-700 dark:text-gray-400">
-                    <td class="px-4 py-3">
-                      <div class="flex items-center text-sm">
-                        <!-- Avatar with inset shadow -->
-                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                          <img class="object-cover w-full h-full rounded-full"
-                            src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                            alt="" loading="lazy" />
-                          <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
-                        </div>
-                        <div>
-                          <p class="font-semibold">Hans Burger</p>
-                          <p class="text-xs text-gray-600 dark:text-gray-400">
-                            10x Developer
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      $ 863.45
-                    </td>
-                    <td class="px-4 py-3 text-xs">
-                      <span
-                        class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                        Approved
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      6/10/2020
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center space-x-4 text-sm">
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Edit">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                          </svg>
-                        </button>
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Delete">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="text-gray-700 dark:text-gray-400">
-                    <td class="px-4 py-3">
-                      <div class="flex items-center text-sm">
-                        <!-- Avatar with inset shadow -->
-                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                          <img class="object-cover w-full h-full rounded-full"
-                            src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&facepad=3&fit=facearea&s=707b9c33066bf8808c934c8ab394dff6"
-                            alt="" loading="lazy" />
-                          <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
-                        </div>
-                        <div>
-                          <p class="font-semibold">Jolina Angelie</p>
-                          <p class="text-xs text-gray-600 dark:text-gray-400">
-                            Unemployed
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      $ 369.95
-                    </td>
-                    <td class="px-4 py-3 text-xs">
-                      <span
-                        class="px-2 py-1 font-semibold leading-tight text-orange-700 bg-orange-100 rounded-full dark:text-white dark:bg-orange-600">
-                        Pending
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      6/10/2020
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center space-x-4 text-sm">
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Edit">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                          </svg>
-                        </button>
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Delete">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="text-gray-700 dark:text-gray-400">
-                    <td class="px-4 py-3">
-                      <div class="flex items-center text-sm">
-                        <!-- Avatar with inset shadow -->
-                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                          <img class="object-cover w-full h-full rounded-full"
-                            src="https://images.unsplash.com/photo-1551069613-1904dbdcda11?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                            alt="" loading="lazy" />
-                          <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
-                        </div>
-                        <div>
-                          <p class="font-semibold">Sarah Curry</p>
-                          <p class="text-xs text-gray-600 dark:text-gray-400">
-                            Designer
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      $ 86.00
-                    </td>
-                    <td class="px-4 py-3 text-xs">
-                      <span
-                        class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-700">
-                        Denied
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      6/10/2020
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center space-x-4 text-sm">
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Edit">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                          </svg>
-                        </button>
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Delete">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="text-gray-700 dark:text-gray-400">
-                    <td class="px-4 py-3">
-                      <div class="flex items-center text-sm">
-                        <!-- Avatar with inset shadow -->
-                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                          <img class="object-cover w-full h-full rounded-full"
-                            src="https://images.unsplash.com/photo-1551006917-3b4c078c47c9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                            alt="" loading="lazy" />
-                          <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
-                        </div>
-                        <div>
-                          <p class="font-semibold">Rulia Joberts</p>
-                          <p class="text-xs text-gray-600 dark:text-gray-400">
-                            Actress
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      $ 1276.45
-                    </td>
-                    <td class="px-4 py-3 text-xs">
-                      <span
-                        class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">
-                        Approved
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      6/10/2020
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center space-x-4 text-sm">
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Edit">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                          </svg>
-                        </button>
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Delete">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  <tr class="text-gray-700 dark:text-gray-400">
-                    <td class="px-4 py-3">
-                      <div class="flex items-center text-sm">
-                        <!-- Avatar with inset shadow -->
-                        <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                          <img class="object-cover w-full h-full rounded-full"
-                            src="https://images.unsplash.com/photo-1546456073-6712f79251bb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                            alt="" loading="lazy" />
-                          <div class="absolute inset-0 rounded-full shadow-inner" aria-hidden="true"></div>
-                        </div>
-                        <div>
-                          <p class="font-semibold">Wenzel Dashington</p>
-                          <p class="text-xs text-gray-600 dark:text-gray-400">
-                            Actor
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      $ 863.45
-                    </td>
-                    <td class="px-4 py-3 text-xs">
-                      <span
-                        class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:text-gray-100 dark:bg-gray-700">
-                        Expired
-                      </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">
-                      6/10/2020
-                    </td>
-                    <td class="px-4 py-3">
-                      <div class="flex items-center space-x-4 text-sm">
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Edit">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path
-                              d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z">
-                            </path>
-                          </svg>
-                        </button>
-                        <button
-                          class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
-                          aria-label="Delete">
-                          <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                              clip-rule="evenodd"></path>
-                          </svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
+                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800" id="membresTable">
+                  <!-- Les données seront chargées ici -->
                 </tbody>
               </table>
             </div>
+      
+            <!-- Pagination -->
             <div
               class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-              <span class="flex items-center col-span-3">
-                Showing 10-20 of 100
+              <span class="flex items-center col-span-3" id="paginationInfo">
+                Chargement...
               </span>
               <span class="col-span-2"></span>
-              <!-- Pagination -->
               <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                 <nav aria-label="Table navigation">
                   <ul class="inline-flex items-center">
                     <li>
                       <button class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                        aria-label="Previous">
+                        onclick="changePage(-1)" aria-label="Previous">
                         <svg class="w-4 h-4 fill-current" aria-hidden="true" viewBox="0 0 20 20">
                           <path
                             d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
@@ -600,13 +412,12 @@
                       </button>
                     </li>
                     <li>
-                      <button class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple">
-                        1
-                      </button>
+                      <button class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
+                        id="currentPage">1</button>
                     </li>
                     <li>
                       <button class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                        aria-label="Next">
+                        onclick="changePage(1)" aria-label="Next">
                         <svg class="w-4 h-4 fill-current" aria-hidden="true" viewBox="0 0 20 20">
                           <path
                             d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
@@ -621,6 +432,333 @@
           </div>
         </div>
       </main>
+      
+      <!-- Modal Ajout Membre -->
+      <div id="addModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md dark:bg-gray-800">
+          <h3 class="text-lg font-semibold mb-4 dark:text-white">Ajouter un Membre</h3>
+          <form id="addMembreForm">
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nom</label>
+                <input type="text" name="nom" required
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prénom</label>
+                <input type="text" name="prenom" required
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
+                <input type="email" name="email" required
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Rôle</label>
+                <select name="role"
+                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                  <option value="client">Client</option>
+                  <option value="coach">Coach</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div class="mt-6 flex justify-end space-x-3">
+              <button type="button" onclick="closeAddModal()"
+                class="px-4 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 dark:text-white">
+                Annuler
+              </button>
+              <button type="submit" class="px-4 py-2 text-sm text-white bg-purple-600 rounded-md hover:bg-purple-700">
+                Ajouter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <script>
+        const API_BASE_URL = 'http://localhost/camp-entrainement/backend/api';
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let allMembres = [];
+        let filteredMembres = [];
+
+        // Charger les membres au démarrage
+        document.addEventListener('DOMContentLoaded', function () {
+          loadMembres();
+          setupEventListeners();
+        });
+
+        function setupEventListeners() {
+          // Recherche en temps réel
+          document.getElementById('searchInput').addEventListener('input', filterMembres);
+          document.getElementById('roleFilter').addEventListener('change', filterMembres);
+
+          // Formulaire d'ajout
+          document.getElementById('addMembreForm').addEventListener('submit', addMembre);
+        }
+
+        async function loadMembres() {
+          try {
+            showLoading();
+            const response = await fetch(`${API_BASE_URL}/membres.php`);
+            const data = await response.json();
+
+            if (data.success) {
+              allMembres = data.data;
+              filteredMembres = [...allMembres];
+              displayMembres();
+              updateStatistics();
+              updatePaginationInfo();
+            } else {
+              showError('Erreur de chargement des membres');
+            }
+          } catch (error) {
+            console.error('Erreur:', error);
+            showError('Erreur de connexion au serveur');
+          } finally {
+            hideLoading();
+          }
+        }
+
+        function filterMembres() {
+          const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+          const roleFilter = document.getElementById('roleFilter').value;
+
+          filteredMembres = allMembres.filter(membre => {
+            const matchesSearch = membre.nom.toLowerCase().includes(searchTerm) ||
+              membre.prenom.toLowerCase().includes(searchTerm) ||
+              membre.email.toLowerCase().includes(searchTerm);
+            const matchesRole = !roleFilter || membre.role === roleFilter;
+
+            return matchesSearch && matchesRole;
+          });
+
+          currentPage = 1;
+          displayMembres();
+          updatePaginationInfo();
+        }
+
+        function displayMembres() {
+          const startIndex = (currentPage - 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          const membresPage = filteredMembres.slice(startIndex, endIndex);
+
+          const tbody = document.getElementById('membresTable');
+          tbody.innerHTML = '';
+
+          if (membresPage.length === 0) {
+            tbody.innerHTML = `
+                      <tr>
+                          <td colspan="7" class="px-4 py-4 text-sm text-center text-gray-500">
+                              Aucun membre trouvé
+                          </td>
+                      </tr>
+                  `;
+            return;
+          }
+
+          membresPage.forEach(membre => {
+            const row = document.createElement('tr');
+            row.className = 'text-gray-700 dark:text-gray-400';
+
+            // Déterminer la couleur du badge selon le rôle
+            let roleColor = 'bg-blue-100 text-blue-700 dark:bg-blue-700 dark:text-blue-100';
+            if (membre.role === 'coach') {
+              roleColor = 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100';
+            } else if (membre.role === 'admin') {
+              roleColor = 'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100';
+            }
+
+            // Déterminer la couleur du statut de paiement
+            let statutColor = 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-100';
+            if (membre.statut_paiement === 'payé') {
+              statutColor = 'bg-green-100 text-green-700 dark:bg-green-700 dark:text-green-100';
+            } else if (membre.statut_paiement === 'en attente') {
+              statutColor = 'bg-orange-100 text-orange-700 dark:bg-orange-700 dark:text-orange-100';
+            } else if (membre.statut_paiement === 'annulé') {
+              statutColor = 'bg-red-100 text-red-700 dark:bg-red-700 dark:text-red-100';
+            }
+
+            row.innerHTML = `
+                      <td class="px-4 py-3">
+                          <div class="flex items-center text-sm">
+                              <div class="w-8 h-8 mr-3 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 font-bold text-xs">
+                                  ${membre.prenom?.charAt(0) || ''}${membre.nom?.charAt(0) || ''}
+                              </div>
+                              <div>
+                                  <p class="font-semibold">${membre.prenom} ${membre.nom}</p>
+                              </div>
+                          </div>
+                      </td>
+                      <td class="px-4 py-3 text-sm">${membre.email}</td>
+                      <td class="px-4 py-3 text-xs">
+                          <span class="px-2 py-1 font-semibold leading-tight rounded-full ${roleColor}">
+                              ${membre.role}
+                          </span>
+                      </td>
+                      <td class="px-4 py-3 text-sm">${new Date(membre.date_creation).toLocaleDateString('fr-FR')}</td>
+                      <td class="px-4 py-3 text-sm">${membre.nom_abonnement || 'Aucun'}</td>
+                      <td class="px-4 py-3 text-xs">
+                          <span class="px-2 py-1 font-semibold leading-tight rounded-full ${statutColor}">
+                              ${membre.statut_paiement || 'N/A'}
+                          </span>
+                      </td>
+                      <td class="px-4 py-3">
+                          <div class="flex items-center space-x-4 text-sm">
+                              <button onclick="editMembre(${membre.utilisateur_id})"
+                                  class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                  aria-label="Edit">
+                                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                                  </svg>
+                              </button>
+                              <button onclick="deleteMembre(${membre.utilisateur_id})"
+                                  class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-red-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray"
+                                  aria-label="Delete">
+                                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                                  </svg>
+                              </button>
+                          </div>
+                      </td>
+                  `;
+            tbody.appendChild(row);
+          });
+        }
+
+        function updateStatistics() {
+          const totalMembres = allMembres.length;
+          const totalCoachs = allMembres.filter(m => m.role === 'coach').length;
+
+          // Calcul des revenus totaux (simplifié)
+          const revenusTotaux = allMembres.reduce((total, membre) => {
+            // Ici tu devras adapter selon ta structure de données réelle
+            return total + (parseFloat(membre.prix) || 0);
+          }, 0);
+
+          document.getElementById('totalMembres').textContent = totalMembres;
+          document.getElementById('totalCoachs').textContent = totalCoachs;
+          document.getElementById('revenusTotaux').textContent = revenusTotaux.toFixed(2) + ' €';
+
+          // Pour les séances à venir, tu devras appeler une API spécifique
+          document.getElementById('seancesAVenir').textContent = '0'; // À implémenter
+        }
+
+        async function addMembre(e) {
+          e.preventDefault();
+
+          const formData = new FormData(e.target);
+          const data = {
+            nom: formData.get('nom'),
+            prenom: formData.get('prenom'),
+            email: formData.get('email'),
+            role: formData.get('role')
+          };
+
+          try {
+            const response = await fetch(`${API_BASE_URL}/membres.php`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              closeAddModal();
+              loadMembres(); // Recharger la liste
+              showSuccess('Membre ajouté avec succès');
+            } else {
+              showError(result.message || 'Erreur lors de l\'ajout');
+            }
+          } catch (error) {
+            console.error('Erreur:', error);
+            showError('Erreur de connexion');
+          }
+        }
+
+        function openAddModal() {
+          document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+          document.getElementById('addModal').classList.add('hidden');
+          document.getElementById('addMembreForm').reset();
+        }
+
+        function changePage(direction) {
+          const newPage = currentPage + direction;
+          const totalPages = Math.ceil(filteredMembres.length / itemsPerPage);
+
+          if (newPage >= 1 && newPage <= totalPages) {
+            currentPage = newPage;
+            displayMembres();
+            updatePaginationInfo();
+          }
+        }
+
+        function updatePaginationInfo() {
+          const totalPages = Math.ceil(filteredMembres.length / itemsPerPage);
+          const startItem = (currentPage - 1) * itemsPerPage + 1;
+          const endItem = Math.min(currentPage * itemsPerPage, filteredMembres.length);
+
+          document.getElementById('paginationInfo').textContent =
+            `Affichage ${startItem}-${endItem} sur ${filteredMembres.length}`;
+
+          document.getElementById('currentPage').textContent = currentPage;
+        }
+
+        function editMembre(id) {
+          // À implémenter - ouvrir modal d'édition
+          alert(`Édition du membre ${id} - À implémenter`);
+        }
+
+        async function deleteMembre(id) {
+          if (confirm('Êtes-vous sûr de vouloir supprimer ce membre ?')) {
+            try {
+              const response = await fetch(`${API_BASE_URL}/membres.php?id=${id}`, {
+                method: 'DELETE'
+              });
+
+              const result = await response.json();
+
+              if (result.success) {
+                loadMembres(); // Recharger la liste
+                showSuccess('Membre supprimé avec succès');
+              } else {
+                showError(result.message || 'Erreur lors de la suppression');
+              }
+            } catch (error) {
+              console.error('Erreur:', error);
+              showError('Erreur de connexion');
+            }
+          }
+        }
+
+        // Fonctions utilitaires
+        function showLoading() {
+          // Tu peux ajouter un spinner ici
+          console.log('Chargement...');
+        }
+
+        function hideLoading() {
+          console.log('Chargement terminé');
+        }
+
+        function showSuccess(message) {
+          // Tu peux utiliser une notification toast ici
+          alert('Succès: ' + message);
+        }
+
+        function showError(message) {
+          // Tu peux utiliser une notification toast ici
+          alert('Erreur: ' + message);
+        }
+      </script>
     </div>
   </div>
 </body>

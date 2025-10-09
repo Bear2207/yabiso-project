@@ -256,6 +256,7 @@
     </div>
 
     <script>
+        const API_BASE_URL = 'http://localhost/camp-entrainement/backend/api';
         let currentPage = 1;
         const itemsPerPage = 10;
         let allProgres = [];
@@ -268,207 +269,42 @@
 
         async function loadProgres() {
             try {
-                const response = await fetch('/api/progres');
+                const response = await fetch(`${API_BASE_URL}/progres.php`);
                 const data = await response.json();
 
                 if (data.success) {
-                    allProgres = data.data;
+                    allProgres = data.data.map(progres => {
+                        // Calculer l'IMC si non fourni
+                        const imc = progres.imc || (progres.poids && progres.taille
+                            ? (progres.poids / (progres.taille * progres.taille)).toFixed(1)
+                            : null);
+
+                        return {
+                            ...progres,
+                            imc: imc
+                        };
+                    });
+
                     displayProgres();
                     updateStatistics();
                     createCharts();
                     updatePaginationInfo();
                 } else {
                     console.error('Erreur:', data.message);
+                    showError('Erreur de chargement des données de progression');
                 }
             } catch (error) {
                 console.error('Erreur de chargement:', error);
+                showError('Erreur de connexion au serveur');
             }
         }
 
-        function displayProgres() {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-            const progresPage = allProgres.slice(startIndex, endIndex);
+        // ... (le reste des fonctions reste identique à ton code existant)
+        // Garde tes fonctions displayProgres(), updateStatistics(), createCharts(), etc.
 
-            const tbody = document.getElementById('progresTableBody');
-            tbody.innerHTML = '';
-
-            if (progresPage.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="px-4 py-4 text-sm text-center text-gray-500">
-                            Aucune donnée de progression disponible
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            progresPage.forEach(progres => {
-                const row = document.createElement('tr');
-                row.className = 'text-gray-700 dark:text-gray-400';
-
-                // Déterminer la catégorie IMC
-                let imcClass = 'text-gray-600';
-                let imcStatus = 'Normal';
-                if (progres.imc < 18.5) {
-                    imcClass = 'text-blue-600 font-semibold';
-                    imcStatus = 'Maigreur';
-                } else if (progres.imc >= 25 && progres.imc < 30) {
-                    imcClass = 'text-orange-600 font-semibold';
-                    imcStatus = 'Surpoids';
-                } else if (progres.imc >= 30) {
-                    imcClass = 'text-red-600 font-semibold';
-                    imcStatus = 'Obésité';
-                }
-
-                row.innerHTML = `
-                    <td class="px-4 py-3 text-sm">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 mr-3 rounded-full bg-purple-200 flex items-center justify-center text-purple-600 font-bold text-xs">
-                                ${progres.prenom.charAt(0)}${progres.nom.charAt(0)}
-                            </div>
-                            ${progres.prenom} ${progres.nom}
-                        </div>
-                    </td>
-                    <td class="px-4 py-3 text-sm">${new Date(progres.date_mesure).toLocaleDateString('fr-FR')}</td>
-                    <td class="px-4 py-3 text-sm font-semibold">${progres.poids}</td>
-                    <td class="px-4 py-3 text-sm">${progres.taille}</td>
-                    <td class="px-4 py-3 text-sm">
-                        <span class="${imcClass}" title="${imcStatus}">
-                            ${progres.imc}
-                        </span>
-                    </td>
-                    <td class="px-4 py-3 text-sm">${progres.masse_musculaire || 'N/A'}%</td>
-                    <td class="px-4 py-3 text-sm">${progres.masse_graisseuse || 'N/A'}%</td>
-                `;
-
-                tbody.appendChild(row);
-            });
-        }
-
-        function updateStatistics() {
-            if (allProgres.length === 0) return;
-
-            // Calcul des moyennes
-            const poidsMoyen = (allProgres.reduce((sum, p) => sum + parseFloat(p.poids), 0) / allProgres.length).toFixed(1);
-            const imcMoyen = (allProgres.reduce((sum, p) => sum + parseFloat(p.imc || 0), 0) / allProgres.length).toFixed(1);
-            const masseMusculaireMoyenne = (allProgres.reduce((sum, p) => sum + parseFloat(p.masse_musculaire || 0), 0) / allProgres.length).toFixed(1);
-
-            // Mise à jour des cartes
-            document.getElementById('poidsMoyen').textContent = `${poidsMoyen} kg`;
-            document.getElementById('imcMoyen').textContent = imcMoyen;
-            document.getElementById('masseMusculaireMoyenne').textContent = `${masseMusculaireMoyenne}%`;
-            document.getElementById('totalMesures').textContent = allProgres.length;
-            document.getElementById('totalProgres').textContent = `(${allProgres.length} mesures)`;
-        }
-
-        function createCharts() {
-            // Grouper les données par mois pour l'évolution du poids
-            const dataByMonth = {};
-            allProgres.forEach(p => {
-                const month = new Date(p.date_mesure).toLocaleDateString('fr-FR', { month: 'short', year: 'numeric' });
-                if (!dataByMonth[month]) {
-                    dataByMonth[month] = [];
-                }
-                dataByMonth[month].push(parseFloat(p.poids));
-            });
-
-            const labels = Object.keys(dataByMonth);
-            const poidsMoyens = labels.map(month => {
-                const poids = dataByMonth[month];
-                return (poids.reduce((a, b) => a + b, 0) / poids.length).toFixed(1);
-            });
-
-            // Chart Évolution du poids
-            const poidsCtx = document.getElementById('poidsChart').getContext('2d');
-            if (poidsChart) poidsChart.destroy();
-            poidsChart = new Chart(poidsCtx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Poids moyen (kg)',
-                        data: poidsMoyens,
-                        borderColor: 'rgb(99, 102, 241)',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            });
-
-            // Chart Répartition IMC
-            const imcCategories = {
-                'Maigreur': 0,
-                'Normal': 0,
-                'Surpoids': 0,
-                'Obésité': 0
-            };
-
-            allProgres.forEach(p => {
-                const imc = parseFloat(p.imc || 0);
-                if (imc < 18.5) imcCategories['Maigreur']++;
-                else if (imc < 25) imcCategories['Normal']++;
-                else if (imc < 30) imcCategories['Surpoids']++;
-                else imcCategories['Obésité']++;
-            });
-
-            const imcCtx = document.getElementById('imcChart').getContext('2d');
-            if (imcChart) imcChart.destroy();
-            imcChart = new Chart(imcCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(imcCategories),
-                    datasets: [{
-                        data: Object.values(imcCategories),
-                        backgroundColor: [
-                            'rgb(59, 130, 246)',
-                            'rgb(34, 197, 94)',
-                            'rgb(249, 115, 22)',
-                            'rgb(239, 68, 68)'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        function changePage(direction) {
-            const newPage = currentPage + direction;
-            const totalPages = Math.ceil(allProgres.length / itemsPerPage);
-
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                displayProgres();
-                updatePaginationInfo();
-            }
-        }
-
-        function updatePaginationInfo() {
-            const totalPages = Math.ceil(allProgres.length / itemsPerPage);
-            const startItem = (currentPage - 1) * itemsPerPage + 1;
-            const endItem = Math.min(currentPage * itemsPerPage, allProgres.length);
-
-            document.getElementById('paginationInfo').textContent =
-                `Affichage ${startItem}-${endItem} sur ${allProgres.length}`;
-
-            document.getElementById('currentPage').textContent = currentPage;
+        function showError(message) {
+            // Tu peux utiliser une notification toast ici
+            alert('Erreur: ' + message);
         }
     </script>
 </body>
