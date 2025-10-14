@@ -6,9 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Créer un compte - Yabiso Fitness</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../assets/css/tailwind.output.css" />
+  <link rel="stylesheet" href="assets/css/tailwind.output.css" />
   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-  <script src="../assets/js/init-alpine.js"></script>
+  <script src="assets/js/init-alpine.js"></script>
 </head>
 
 <body>
@@ -17,9 +17,9 @@
       <div class="flex flex-col overflow-y-auto md:flex-row">
         <div class="h-32 md:h-auto md:w-1/2">
           <img aria-hidden="true" class="object-cover w-full h-full dark:hidden"
-            src="../assets/img/create-account-office.jpeg" alt="Inscription" />
+            src="assets/img/create-account-office.jpeg" alt="Inscription" />
           <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block"
-            src="../assets/img/create-account-office-dark.jpeg" alt="Inscription" />
+            src="assets/img/create-account-office-dark.jpeg" alt="Inscription" />
         </div>
         <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
           <div class="w-full">
@@ -88,7 +88,7 @@
             <hr class="my-8" />
 
             <p class="mt-4 text-center">
-              <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline" href="./login.html">
+              <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline" href="login.html">
                 Déjà un compte ? Se connecter
               </a>
             </p>
@@ -99,6 +99,9 @@
   </div>
 
   <script>
+    // Configuration de l'API
+    const API_BASE_URL = 'http://localhost/yabiso-project/api';
+
     document.getElementById('registerForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
@@ -132,14 +135,14 @@
       submitBtn.disabled = true;
 
       try {
-        const response = await fetch('/api/register', {
+        const response = await fetch(`${API_BASE_URL}/auth/register.php`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            prenom: prenom,
             nom: nom,
+            prenom: prenom,
             email: email,
             password: password
           })
@@ -148,15 +151,12 @@
         const data = await response.json();
 
         if (data.success) {
-          messageDiv.textContent = '✅ Compte créé avec succès ! Redirection...';
+          messageDiv.textContent = '✅ Compte créé avec succès ! Redirection vers la connexion...';
           messageDiv.className = 'mt-4 text-sm text-green-600 dark:text-green-400 text-center';
 
-          // Stocker les infos utilisateur
-          localStorage.setItem('user', JSON.stringify(data.user));
-
-          // Rediriger vers la page d'accueil
+          // Rediriger vers la page de connexion
           setTimeout(() => {
-            window.location.href = '../index.html';
+            window.location.href = 'login.html';
           }, 2000);
 
         } else {
@@ -174,10 +174,20 @@
     });
 
     // Vérifier si l'utilisateur est déjà connecté
-    window.addEventListener('load', () => {
-      const user = localStorage.getItem('user');
-      if (user) {
-        window.location.href = '../index.html';
+    window.addEventListener('load', async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/check.php`, {
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          // Rediriger vers le dashboard si déjà connecté
+          window.location.href = 'index.html';
+        }
+      } catch (error) {
+        console.log('Utilisateur non connecté');
       }
     });
   </script>
