@@ -32,12 +32,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute([$user_id, $date_mesure, $poids, $taille, $masse_musculaire, $masse_graisseuse, $notes]);
         $progres_id = $db->lastInsertId();
 
-        // Logger l'action — fallback to error_log if Auth::logActivity is not defined
-        if (isset($_SESSION['user_id'])) {
-            error_log("Activity: User {$_SESSION['user_id']} added progress for User: $user_id, Date: $date_mesure");
-        } else {
-            error_log("Activity: Added progress for User: $user_id, Date: $date_mesure");
-        }
+        // Logger l'action
+        $auth->logActivity($_SESSION['user_id'], 'Ajout progression', "User: $user_id, Date: $date_mesure");
 
         echo json_encode([
             'success' => true,

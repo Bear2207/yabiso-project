@@ -9,6 +9,37 @@
   <link rel="stylesheet" href="./assets/css/tailwind.output.css" />
   <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
   <script src="./assets/js/init-alpine.js"></script>
+  <script>
+    // Vérification d'authentification
+    async function checkAuth() {
+      try {
+        const response = await fetch('http://localhost/yabiso-project/api/auth/check.php', {
+          credentials: 'include'
+        });
+        const data = await response.json();
+
+        if (!data.success) {
+          window.location.href = 'login.html';
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.error('Erreur auth:', error);
+        window.location.href = 'login.html';
+        return false;
+      }
+    }
+
+    // Vérifier l'authentification au chargement
+    document.addEventListener('DOMContentLoaded', async function () {
+      const isAuthenticated = await checkAuth();
+      if (isAuthenticated) {
+        // Charger les données des membres
+        loadMembres();
+        setupEventListeners();
+      }
+    });
+  </script>
 </head>
 
 <body>
@@ -62,7 +93,7 @@
         </ul>
         <div class="px-6 my-6">
           <button
-            class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+            class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple" href="create-account.html" onclick="window.location.href='create-account.html'">
             Create account
             <span class="ml-2" aria-hidden="true">+</span>
           </button>
@@ -478,7 +509,7 @@
       </div>
       
       <script>
-        const API_BASE_URL = 'http://localhost/camp-entrainement/backend/api';
+        const API_BASE_URL = 'http://localhost/yabiso-project/api';
         let currentPage = 1;
         const itemsPerPage = 10;
         let allMembres = [];
@@ -502,7 +533,9 @@
         async function loadMembres() {
           try {
             showLoading();
-            const response = await fetch(`${API_BASE_URL}/membres.php`);
+            const response = await fetch(`${API_BASE_URL}/membres/read.php`, {
+              credentials: 'include'
+            });
             const data = await response.json();
 
             if (data.success) {
@@ -658,7 +691,8 @@
           };
 
           try {
-            const response = await fetch(`${API_BASE_URL}/membres.php`, {
+            const response = await fetch(`${API_BASE_URL}/membres/create.php`, {
+              credentials: 'include',
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -720,8 +754,13 @@
         async function deleteMembre(id) {
           if (confirm('Êtes-vous sûr de vouloir supprimer ce membre ?')) {
             try {
-              const response = await fetch(`${API_BASE_URL}/membres.php?id=${id}`, {
-                method: 'DELETE'
+              const response = await fetch(`${API_BASE_URL}/members/delete.php`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ user_id: id })
               });
 
               const result = await response.json();

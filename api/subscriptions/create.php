@@ -54,13 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $abonnement_utilisateur_id = $db->lastInsertId();
 
         // Logger l'action
-        $actorId = $_SESSION['user_id'] ?? null;
-        $logMessage = "User: $user_id, Abonnement: $abonnement_id";
-        if (is_callable([$auth, 'logActivity'])) {
-            call_user_func([$auth, 'logActivity'], $actorId, 'Attribution abonnement', $logMessage);
-        } else {
-            error_log("Attribution abonnement - Actor: " . ($actorId ?? 'unknown') . ", $logMessage");
-        }
+        $auth->logActivity($_SESSION['user_id'], 'Attribution abonnement', "User: $user_id, Abonnement: $abonnement_id");
 
         // Créer une notification pour l'utilisateur
         $userStmt = $db->prepare("SELECT prenom, nom FROM utilisateurs WHERE utilisateur_id = ?");

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
 
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +13,35 @@
     <script src="./assets/js/init-alpine.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
+    <script>
+        // Vérification d'authentification
+        async function checkAuth() {
+            try {
+                const response = await fetch('http://localhost/yabiso-project/api/auth/check.php', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+
+                if (!data.success) {
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.error('Erreur auth:', error);
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        // Vérifier l'authentification au chargement
+        document.addEventListener('DOMContentLoaded', async function () {
+            const isAuthenticated = await checkAuth();
+            if (isAuthenticated) {
+                loadProgres();
+            }
+        });
+    </script>
 </head>
 
 <body>
@@ -66,7 +96,7 @@
                 <div class="px-6 my-6">
                     <button
                         class="flex items-center justify-between w-full px-4 py-2 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
-                        onclick="window.location.href='pages/create-account.html'">
+                        onclick="window.location.href='create-account.html'">
                         Create account
                         <span class="ml-2" aria-hidden="true">+</span>
                     </button>
@@ -256,7 +286,7 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost/camp-entrainement/backend/api';
+        const API_BASE_URL = 'http://localhost/yabiso-project/api';
         let currentPage = 1;
         const itemsPerPage = 10;
         let allProgres = [];
@@ -269,7 +299,9 @@
 
         async function loadProgres() {
             try {
-                const response = await fetch(`${API_BASE_URL}/progres.php`);
+                const response = await fetch(`${API_BASE_URL}/progres/read.php`, {
+                    credentials: 'include'
+                });
                 const data = await response.json();
 
                 if (data.success) {

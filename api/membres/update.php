@@ -42,14 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $stmt->execute($updateValues);
 
         if ($stmt->rowCount() > 0) {
-            if (is_callable([$auth, 'logActivity'])) {
-                // Use call_user_func to avoid static analysis errors when the method may not exist
-                call_user_func([$auth, 'logActivity'], $_SESSION['user_id'] ?? null, 'Modification membre', "ID: $user_id");
-            } else {
-                // Fallback logging when Auth::logActivity is not available
-                $loggerUser = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'unknown';
-                error_log("[$loggerUser] Modification membre: ID: $user_id");
-            }
+            $auth->logActivity($_SESSION['user_id'], 'Modification membre', "ID: $user_id");
             echo json_encode(['success' => true, 'message' => 'Membre mis à jour avec succès']);
         } else {
             http_response_code(404);

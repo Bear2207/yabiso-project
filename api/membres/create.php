@@ -1,45 +1,6 @@
 <?php
 require_once '../includes/auth.php';
 
-if (!class_exists('Database')) {
-    // Minimal Database singleton to provide getConnection(); adjust DSN/credentials as needed
-    class Database
-    {
-        private static $instance = null;
-        private $conn;
-
-        private function __construct()
-        {
-            $host = '127.0.0.1';
-            $db   = 'yabiso_db';    // change to your database name
-            $user = 'root';      // change to your DB user
-            $pass = '';          // change to your DB password
-            $charset = 'utf8mb4';
-
-            $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            ];
-
-            $this->conn = new PDO($dsn, $user, $pass, $options);
-        }
-
-        public static function getInstance()
-        {
-            if (self::$instance === null) {
-                self::$instance = new self();
-            }
-            return self::$instance;
-        }
-
-        public function getConnection()
-        {
-            return $this->conn;
-        }
-    }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $auth = new Auth();
     $auth->requireRole(['admin', 'coach']);
@@ -86,15 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $db->lastInsertId();
 
         // Logger l'action
-        if (is_object($auth) && method_exists($auth, 'logActivity')) {
-            // Safely call logActivity only when available
-            call_user_func([$auth, 'logActivity'], $_SESSION['user_id'] ?? 'unknown', 'Création membre', "Membre: $prenom $nom");
-        } else {
-            // Fallback logging if Auth->logActivity is not available
-            $actor = $_SESSION['user_id'] ?? 'unknown';
-            $message = sprintf("Création membre by %s: Membre: %s %s", $actor, $prenom, $nom);
-            error_log($message);
-        }
+        $auth->logActivity($_SESSION['user_id'], 'Création membre', "Membre: $prenom $nom");
 
         http_response_code(201);
         echo json_encode([

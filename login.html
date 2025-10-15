@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html :class="{ 'theme-dark': dark }" x-data="data()" lang="fr">
+<html lang="fr">
 
 <head>
   <meta charset="UTF-8" />
@@ -7,60 +7,59 @@
   <title>Connexion - Yabiso Fitness</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/tailwind.output.css" />
-  <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-  <script src="assets/js/init-alpine.js"></script>
 </head>
 
 <body>
-  <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
-    <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
+  <div class="flex items-center min-h-screen p-6 bg-gray-50">
+    <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl">
       <div class="flex flex-col overflow-y-auto md:flex-row">
         <div class="h-32 md:h-auto md:w-1/2">
-          <img aria-hidden="true" class="object-cover w-full h-full dark:hidden" src="assets/img/login-office.jpeg"
-            alt="Salle de sport" />
-          <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block"
-            src="assets/img/login-office-dark.jpeg" alt="Salle de sport" />
+          <img class="object-cover w-full h-full" src="assets/img/login-office.jpeg" alt="Salle de sport" />
         </div>
         <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
           <div class="w-full">
-            <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
+            <h1 class="mb-4 text-xl font-semibold text-gray-700">
               Connexion à Yabiso Fitness
             </h1>
 
+            <!-- Formulaire de test avec différentes méthodes -->
+            <div class="mb-4 space-y-2">
+              <button onclick="testDirectAccess()" class="w-full px-4 py-2 text-sm bg-blue-500 text-white rounded">
+                Test Accès Direct API
+              </button>
+              <button onclick="testDatabase()" class="w-full px-4 py-2 text-sm bg-green-500 text-white rounded">
+                Test Base de Données
+              </button>
+            </div>
+
             <form id="loginForm">
               <label class="block text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Email</span>
+                <span class="text-gray-700">Email</span>
                 <input id="email" name="email" type="email" required
-                  class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder="votre@email.com" />
+                  class="block w-full mt-1 text-sm border-gray-300 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
+                  placeholder="votre@email.com" value="yabisoelekiyabino@gmail.com" />
               </label>
 
               <label class="block mt-4 text-sm">
-                <span class="text-gray-700 dark:text-gray-400">Mot de passe</span>
+                <span class="text-gray-700">Mot de passe</span>
                 <input id="password" name="password" type="password" required
-                  class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input"
-                  placeholder="Votre mot de passe" />
+                  class="block w-full mt-1 text-sm border-gray-300 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple form-input"
+                  placeholder="Votre mot de passe" value="23525689" />
               </label>
 
               <button type="submit" id="submitBtn"
-                class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                 Se connecter
               </button>
             </form>
 
             <div id="message" class="mt-4 text-sm text-center"></div>
+            <div id="debug" class="mt-2 text-xs text-gray-500"></div>
 
             <hr class="my-8" />
 
             <p class="mt-4 text-center">
-              <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                href="forgot-password.html">
-                Mot de passe oublié ?
-              </a>
-            </p>
-            <p class="mt-1 text-center">
-              <a class="text-sm font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                href="create-account.html">
+              <a class="text-sm font-medium text-purple-600 hover:underline" href="create-account.html">
                 Créer un compte
               </a>
             </p>
@@ -71,8 +70,35 @@
   </div>
 
   <script>
-    // Configuration de l'API
     const API_BASE_URL = 'http://localhost/yabiso-project/api';
+
+    // Test d'accès direct à l'API
+    async function testDirectAccess() {
+      const debugDiv = document.getElementById('debug');
+      debugDiv.textContent = 'Test en cours...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/test_connection.php`);
+        const text = await response.text();
+        debugDiv.textContent = `Test API: Status ${response.status} - ${text}`;
+      } catch (error) {
+        debugDiv.textContent = `Erreur API: ${error.message}`;
+      }
+    }
+
+    // Test de la base de données
+    async function testDatabase() {
+      const debugDiv = document.getElementById('debug');
+      debugDiv.textContent = 'Test DB en cours...';
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/test_database.php`);
+        const text = await response.text();
+        debugDiv.textContent = `Test DB: Status ${response.status} - ${text}`;
+      } catch (error) {
+        debugDiv.textContent = `Erreur DB: ${error.message}`;
+      }
+    }
 
     document.getElementById('loginForm').addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -80,17 +106,21 @@
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const messageDiv = document.getElementById('message');
+      const debugDiv = document.getElementById('debug');
       const submitBtn = document.getElementById('submitBtn');
 
-      // Réinitialiser le message
+      // Réinitialiser les messages
       messageDiv.textContent = '';
       messageDiv.className = 'mt-4 text-sm text-center';
+      debugDiv.textContent = '';
 
       // Afficher le chargement
       submitBtn.textContent = 'Connexion...';
       submitBtn.disabled = true;
 
       try {
+        debugDiv.textContent = 'Envoi de la requête...';
+
         const response = await fetch(`${API_BASE_URL}/auth/login.php`, {
           method: 'POST',
           headers: {
@@ -100,50 +130,56 @@
             email: email,
             password: password
           }),
-          credentials: 'include' // Important pour les sessions PHP
+          // Mode no-cors pour éviter les erreurs CORS
+          mode: 'cors',
+          credentials: 'same-origin'
         });
 
-        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        debugDiv.textContent = `Status: ${response.status}, Response: ${text}`;
+
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          throw new Error(`Réponse non-JSON: ${text}`);
+        }
 
         if (data.success) {
           messageDiv.textContent = '✅ Connexion réussie ! Redirection...';
-          messageDiv.className = 'mt-4 text-sm text-green-600 dark:text-green-400 text-center';
+          messageDiv.className = 'mt-4 text-sm text-green-600 text-center';
 
-          // Rediriger vers le dashboard
           setTimeout(() => {
             window.location.href = 'index.html';
           }, 1500);
 
         } else {
           messageDiv.textContent = '❌ ' + data.message;
-          messageDiv.className = 'mt-4 text-sm text-red-600 dark:text-red-400 text-center';
+          messageDiv.className = 'mt-4 text-sm text-red-600 text-center';
         }
       } catch (error) {
         console.error('Erreur:', error);
         messageDiv.textContent = '❌ Erreur de connexion au serveur';
-        messageDiv.className = 'mt-4 text-sm text-red-600 dark:text-red-400 text-center';
+        messageDiv.className = 'mt-4 text-sm text-red-600 text-center';
+        debugDiv.textContent = 'Erreur détaillée: ' + error.message;
+
+        // Suggestions basées sur l'erreur
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          debugDiv.textContent += '\n\nVérifiez que:\n- XAMPP est démarré\n- Apache est en cours d\'exécution\n- L\'URL de l\'API est correcte';
+        }
       } finally {
         submitBtn.textContent = 'Se connecter';
         submitBtn.disabled = false;
       }
     });
 
-    // Vérifier si l'utilisateur est déjà connecté
-    window.addEventListener('load', async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/auth/check.php`, {
-          credentials: 'include'
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          // Rediriger vers le dashboard si déjà connecté
-          window.location.href = 'index.html';
-        }
-      } catch (error) {
-        console.log('Utilisateur non connecté');
-      }
+    // Test automatique au chargement
+    window.addEventListener('load', () => {
+      testDirectAccess();
     });
   </script>
 </body>

@@ -45,9 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $paiement_id = $db->lastInsertId();
 
         // Logger l'action
-        $userSessionId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 'unknown';
-        $logMessage = "Enregistrement paiement: Montant: $montant, User: $user_id, Actor: $userSessionId";
-        error_log($logMessage);
+        $auth->logActivity($_SESSION['user_id'], 'Enregistrement paiement', "Montant: $montant, User: $user_id");
 
         echo json_encode([
             'success' => true,
