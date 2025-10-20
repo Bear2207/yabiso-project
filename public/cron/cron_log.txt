@@ -1,0 +1,12 @@
+# Se positionner dans votre projet
+cd /chemin/vers/votre/projet
+
+# Créer le dossier cron s'il n'existe pas
+mkdir -p cron
+
+# Créer le fichier log avec les permissions appropriées
+touch cron/cron_log.txt
+chmod 644 cron/cron_log.txt
+
+# Vérifier que le fichier est créé
+ls -la cron/cron_log.txt
